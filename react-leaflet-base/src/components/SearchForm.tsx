@@ -10,7 +10,6 @@ import { useState } from 'react';
 import { useAppDispatch } from '../hooks';
 import { stockpileSearchAsync } from '../stores/stockpile-slice';
 
-
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
@@ -19,13 +18,28 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 
+// import { db, functions } from '../plugins/firebase';
+import { functions } from '../plugins/firebase';
+
+
+type RequestBody = {
+    name: string;
+    number: number;
+    address: string;
+    expiredAt: string;
+    shareable: boolean;
+}
+
+type ResponseData = {
+    status: string;
+    message: string;
+}
 
 const SearchForm = () => {
 
@@ -42,6 +56,34 @@ const SearchForm = () => {
       setOpen(false);
     };
   
+    const callable = async (request: RequestBody) => {
+        try {
+          // API呼び出し
+          const response = await functions.httpsCallable('helloWorld')(request);
+          const data = response.data as ResponseData;
+          if (data.status === 'success') {
+            console.log('success API Request');
+            console.log(data.message);
+          } else {
+            console.log('failed API Request');
+            console.log(data.message);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+
+    const handleSubscribe = async () => {
+        setOpen(false);
+        await callable({
+            name: 'test',
+            number: 10,
+            address: 'test address',
+            expiredAt: '2040-10-10',
+            shareable: true
+        });
+    };
+
   
     return (
         <Paper
@@ -115,7 +157,7 @@ const SearchForm = () => {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleClose}>Subscribe</Button>
+                        <Button onClick={handleSubscribe}>Subscribe</Button>
                     </DialogActions>
                 </Dialog>
 
