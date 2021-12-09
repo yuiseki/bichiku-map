@@ -24,22 +24,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import RadioGroup from '@mui/material/RadioGroup';
 import Radio from '@mui/material/Radio';
 
-// import { db, functions } from '../plugins/firebase';
-import { functions } from '../plugins/firebase';
-
-
-type RequestBody = {
-    name: string;
-    number: number;
-    address: string;
-    expiredAt: string;
-    shareable: boolean;
-}
-
-type ResponseData = {
-    status: string;
-    message: string;
-}
+import { stockpiles, PostRequestBody } from '../repositories/stockpiles';
 
 const SearchForm = () => {
 
@@ -58,20 +43,12 @@ const SearchForm = () => {
       setOpen(false);
     };
   
-    const callable = async (request: RequestBody) => {
+    const callable = async (request: PostRequestBody) => {
         try {
-          // API呼び出し
-          const response = await functions.httpsCallable('helloWorld')(request);
-          const data = response.data as ResponseData;
-          if (data.status === 'success') {
-            console.log('success API Request');
-            console.log(data.message);
-          } else {
-            console.log('failed API Request');
-            console.log(data.message);
-          }
+            const result = stockpiles().post(request)
+            console.log(result)
         } catch (error) {
-          console.error(error);
+            console.error(error);
         }
       };
 
@@ -161,7 +138,7 @@ const SearchForm = () => {
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>
-                        <Button onClick={handleClose}>登録</Button>
+                        <Button onClick={handleSubscribe}>登録</Button>
                     </DialogActions>
                 </Dialog>
 
